@@ -1,5 +1,5 @@
 import "./styles.css";
-import { Task } from "./module.js";
+import { Task } from "./task.js";
 
 const task = new Task ("clean", "wash stuff", "tomorrow", "high", "I just ate a huge sandwich")
 
