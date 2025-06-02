@@ -1,1 +1,0 @@
-export const itWorks = "It works dude";

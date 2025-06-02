@@ -1,4 +1,7 @@
 import "./styles.css";
-import { itWorks } from "./module.js";
+import { Task } from "./module.js";
 
-console.log(itWorks);
+const task = new Task ("clean", "wash stuff", "tomorrow", "high", "I just ate a huge sandwich")
+
+console.table(task);
+console.log(task);
