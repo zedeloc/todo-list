@@ -1,23 +1,30 @@
 import "./styles.css";
 import { Goal, Task } from "./goal.js";
+import { makeHeader } from "./dom.js";
+import { GoalManager } from "./goal-manager.js";
 
+makeHeader()
 
-const task = new Task ("clean", "wash stuff", "high", "I just ate a huge sandwich")
+const goalManager = new GoalManager();
 
-const task2 = new Task ("clean", "wash stuff", "high", "I just ate a huge sandwich")
+const goal1 = new Goal("Clean Dishes", "Clean all the dishes in the house.", "tonight", "high");
 
-const task3 = new Task ("clean", "wash stuff", "high", "I just ate a huge sandwich")
+goalManager.addGoal(goal1);
 
-const goal1 = new Goal("Clean Entire House", "just clean that house", "tomorrow", "medium", "ah jezus i don't wanna do it")
+console.table(goalManager.goals);
 
-goal1.addTask(task);
-goal1.addTask(task2);
-goal1.addTask(task3);
+const task1 = new Task("Collect all the dishes in my room", "high");
 
-console.table(goal1);
-console.table(goal1.tasks)
-console.table(goal1.tasks[0])
+const task2 = new Task("Fill sink with soapy water", "high");
 
-goal1.tasks[0].isComplete = true;
-goal1.tasks[0].notes = "Actually I lied...";
-console.table(goal1.tasks[0])
+goalManager.goals[0].addTask(task1);
+goalManager.goals[0].addTask(task2);
+
+console.table(goalManager.goals[0].tasks);
+
+const idToRemove = goalManager.goals[0].tasks[0].id
+
+goalManager.goals[0].removeTask(idToRemove);
+
+console.table(goalManager.goals[0].tasks);
+
