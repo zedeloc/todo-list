@@ -14,11 +14,12 @@
   --text-input: #f5f5f5;
 }
 
-h1 {
+h1, h2, h3 {
   margin: 0;
 }
 
 body {
+  height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
   background-color: var(--background);
@@ -31,33 +32,91 @@ header {
   
 }
 
+footer {
+  text-align: center;
+  margin-top: auto;
+
+}
+
+p {
+  margin: 0;
+}
+
 .smile {
-  margin-top: .25rem;
+  font-size: 42px;
+  margin-top: 0;
   margin-left: .5rem;
   transform: rotate(90deg);
 }
 
 .tag-line {
-  margin-left: 2rem;
+  margin-left: 1rem;
+  align-self: center;
 }
 
-footer {
-  text-align: center;
 
-}
 
 #content {
 
 }
 
+/* Goal Card stuffs */
+/*  */
 .goal-card {
-  padding: 1rem;
+  padding: .25rem 1rem .25rem 2rem;
   background-color: var(--card);
   border: solid var(--border) 2px;
   border-radius: 1rem 1rem 1rem 1rem;
+  margin-bottom: .25rem;
 
 }
 
+.top-line {
+  display: grid;
+  grid-template-columns: 2fr 4fr 1fr;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: solid var(--border) 1px;
+}
+
+.bottom-line {
+  padding-top: 2px;
+  display: grid;
+  grid-template-columns: 4fr 2fr 1fr;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* View Tasks Button */
+.view-tasks-button {
+  margin: 0 4rem 0 4rem;
+}
+/* Data Fields */
+.creation-date,
+.due-date {
+  text-align: center;
+}
+
+/*  */
+/*  */
+
+/* taskCard Stuffs */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  margin-left: 2rem;
+  margin-bottom: .5rem;
+
+}
+
+.task-card {
+  margin: none;
+  padding-left: 1rem;
+  border-bottom: solid var(--border) 2px;
+  border-left: solid var(--border) 2px;
+}
+
+/* priority lighting */
 .high {
   border-left: none;
   box-shadow: -12px 0px 20px -14px rgb(183, 0, 37), inset 12px 0px 10px -8px rgb(184, 0, 37) ;
@@ -70,4 +129,20 @@ footer {
 .low {
   border-left: none;
   box-shadow: -12px 0px 20px -14px rgb(33, 33, 255), inset 12px 0px 10px -8px blue ;
+}
+.priority-done {
+  border-left: none;
+  box-shadow: -12px 0px 20px -14px var(--complete), inset 12px 0px 10px -8px var(--complete) ;
+}
+.complete-toggle {
+  flex-shrink: none;
+  width: 1rem;
+  height: 1rem;
+}
+.complete-false {
+  box-shadow: 0px 0px 2px 2px var(--accent);
+}
+.complete-true {
+  background-color: var(--complete);
+  box-shadow: 0px 0px 2px 2px var(--complete);
 }

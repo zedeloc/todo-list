@@ -5,7 +5,7 @@ export class GoalManager {
 
     findGoalByID(goalID) {
         return this.goals.findIndex((goal) => {
-            goal.id === taskID;
+            goal.id === goalID;
         })
     }
 

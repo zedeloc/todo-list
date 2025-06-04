@@ -4,13 +4,13 @@ class Goal {
     tasks = [];
     id = crypto.randomUUID();
     
-    constructor(goalName, description, dueDate, priority, notes=undefined, creationDate=Date()) {
+    constructor(goalName, description, dueDate, priority, notes=undefined, creationDate=new Date()) {
         this.goalName = goalName;
         this.description = description;
         this.dueDate = dueDate;
         this.priority = priority;
         this.notes = notes;
-        this.creationDate = creationDate;
+        this.creationDate = creationDate.toLocaleString()
     }
 
     addTask(task) {
