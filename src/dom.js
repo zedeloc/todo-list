@@ -1,3 +1,5 @@
+import { Goal, Task } from './goal.js'
+
 export function makeHeader() {
     const header = document.querySelector('header');
     const logo = document.createElement('h1');
@@ -20,6 +22,7 @@ export function buildGoalsView(goalManager) {
         // Build Card
         const cardWrapper = document.createElement('div');
         cardWrapper.classList.add('.card-wrapper');
+        // cardWrapper.setAttribute('id', goal.id);
         const goalCard = document.createElement('div');
         // build two lines
         const topLine = document.createElement('div');
@@ -35,7 +38,7 @@ export function buildGoalsView(goalManager) {
         viewTasksButton.addEventListener('click', () => {
             if (viewTasksButton.classList.contains('closed')){
                 viewTasksButton.classList.remove('closed');
-                buildTasksView(goal.tasks, cardWrapper);
+                buildTasksView(goal, cardWrapper);
                 viewTasksButton.classList.add('open');
                 viewTasksButton.textContent = 'Close Tasks';
             } else {
@@ -46,6 +49,17 @@ export function buildGoalsView(goalManager) {
             }
             
         })
+        // Delete Goal button 
+        const deleteGoalButton = document.createElement('button');
+        deleteGoalButton.classList.add('delete-goal-button');
+        deleteGoalButton.textContent = "x";
+
+        deleteGoalButton.addEventListener('click', () => {
+            goalManager.removeGoal(goalManager.findGoalByID(goal.id));
+            clearContent()
+            buildGoalsView(goalManager);
+        })
+
         // Priority level lighting
         goalCard.classList.add(`${goal.priority}`)
         // Fetch card contents
@@ -68,7 +82,7 @@ export function buildGoalsView(goalManager) {
         creationDate.textContent = goal.creationDate;
 
 
-        topLine.append(goalName, description, dueDate);
+        topLine.append(goalName, description, dueDate, deleteGoalButton);
         bottomLine.append(notes, viewTasksButton, creationDate)
 
         goalCard.append(topLine, bottomLine);
@@ -79,11 +93,20 @@ export function buildGoalsView(goalManager) {
         i++
 
     }
+    const addGoal = document.createElement('div');
+    addGoal.classList.add('goal-card');
+    addGoal.classList.add('add-goal');
+    addGoal.textContent = "+ + A d d   G o a l + +";
+    addGoal.addEventListener('click', () => {
+        createGoal(goalManager)
+    })
+    content.append(addGoal)
 
     
 }
 
-function buildTasksView(currentTasks, cardWrapper) {
+function buildTasksView(goal, cardWrapper) {
+    const currentTasks = goal.tasks;
     // Task Card
     const tasksList = document.createElement('div');
     tasksList.classList.add('tasks-list');
@@ -137,6 +160,15 @@ function buildTasksView(currentTasks, cardWrapper) {
 
     }
 
+    const addTask = document.createElement('div');
+    addTask.classList.add('task-card');
+    addTask.classList.add('add-task');
+    addTask.textContent = "+ + A d d   T a s k + +";
+    addTask.addEventListener('click', () => {
+        createTask(goal, cardWrapper)
+    })
+    tasksList.append(addTask)
+
 
     cardWrapper.append(tasksList);
 
@@ -146,3 +178,162 @@ function closeTasksView(cardWrapper) {
     cardWrapper.removeChild(cardWrapper.lastChild)
 }
 
+function createGoal(goalManager) {
+    const openModal = document.querySelector('[data-open-modal]');
+    const closedModal = document.querySelector('[data-close-Modal]');
+    const goalModal  = document.querySelector('[data-modal-new]');
+    goalModal.showModal();
+
+    // form
+    const goalForm = document.createElement('form');
+    const goalName = document.createElement('input')
+    goalName.setAttribute('type', 'text')
+    goalName.setAttribute('placeholder', 'Name')
+    // goalName.setAttribute('required', 'required')
+    const description = document.createElement('input');
+    description.setAttribute('placeholder', 'Description')
+    // description.setAttribute('required', '');
+    const dueDate = document.createElement('input');
+    dueDate.setAttribute('type', 'date')
+    // dueDate.setAttribute('required', '')
+    const priority = document.createElement('select');
+    priority.id = 'priority';
+    console.log(priority.value)
+    // priority.setAttribute('required', '')
+    const optionLow = document.createElement('option');
+    optionLow.setAttribute('value', 'low');
+    optionLow.textContent = "Low"
+    const optionMedium = document.createElement('option');
+    optionMedium.setAttribute('value', 'medium');
+    optionMedium.textContent = "Medium";
+    optionMedium.setAttribute('selected', '');
+    const optionHigh = document.createElement('option');
+    optionHigh.textContent = "High"
+    optionHigh.setAttribute('value', 'high')
+    let currentPriority = 'medium';
+    priority.addEventListener('change', () => {
+        currentPriority = priority.value;
+        console.log(currentPriority)
+    })
+
+
+
+    const notes = document.createElement('input');
+    notes.setAttribute('type', 'textbox');
+    notes.setAttribute('placeholder', 'Add Notes')
+    const newGoalButton = document.createElement('button');
+    newGoalButton.setAttribute('type', 'button')
+    newGoalButton.classList.add('new-goal-button')
+    newGoalButton.textContent = "Submit New Goal";
+
+    
+    const closeModal = document.createElement('button')
+    closeModal.classList.add('close-modal-button')
+    closeModal.textContent = "Cancel";
+    closeModal.addEventListener('click', () => {
+        goalModal.replaceChildren()
+        goalModal.close()
+        
+    })
+
+
+
+    newGoalButton.addEventListener('click', (e) => {
+        // const getPriority = document.querySelector('#priority').value
+        // console.log(getPriority)
+        e.preventDefault()
+        if (goalName.value && dueDate.value) { 
+                const newGoal = new Goal(goalName.value,  dueDate.value, description.value, currentPriority, notes.value)
+                goalManager.addGoal(newGoal)
+                clearContent()
+                buildGoalsView(goalManager);
+                goalModal.replaceChildren()
+                goalModal.close()
+            }
+    })
+
+    priority.append(optionLow, optionMedium, optionHigh)
+    goalForm.append(goalName, description, dueDate, priority, notes, newGoalButton)
+    goalModal.append(goalForm, closeModal)
+}
+
+function createTask(goal, cardWrapper) {
+    const openModal = document.querySelector('[data-open-modal]');
+    const closedModal = document.querySelector('[data-close-Modal]');
+    const taskModal  = document.querySelector('[data-modal-new]');
+    taskModal.showModal();
+
+    // form
+    const taskForm = document.createElement('form');
+    const taskName = document.createElement('input')
+    taskName.setAttribute('type', 'text')
+    taskName.setAttribute('placeholder', 'Name')
+    // goalName.setAttribute('required', 'required')
+    const description = document.createElement('input');
+    description.setAttribute('placeholder', 'Description')
+    // description.setAttribute('required', '');
+    const priority = document.createElement('select');
+    priority.id = 'priority';
+    console.log(priority.value)
+    // priority.setAttribute('required', '')
+    const optionLow = document.createElement('option');
+    optionLow.setAttribute('value', 'low');
+    optionLow.textContent = "Low"
+    const optionMedium = document.createElement('option');
+    optionMedium.setAttribute('value', 'medium');
+    optionMedium.textContent = "Medium";
+    optionMedium.setAttribute('selected', '');
+    const optionHigh = document.createElement('option');
+    optionHigh.textContent = "High"
+    optionHigh.setAttribute('value', 'high')
+    let currentPriority = 'medium';
+    priority.addEventListener('change', () => {
+        currentPriority = priority.value;
+        console.log(currentPriority)
+    })
+    // 
+    const notes = document.createElement('input');
+    notes.setAttribute('type', 'textbox');
+    notes.setAttribute('placeholder', 'Add Notes')
+    const newTaskButton = document.createElement('button');
+    newTaskButton.setAttribute('type', 'button')
+    newTaskButton.classList.add('new-goal-button')
+    newTaskButton.textContent = "Submit New Goal";
+    // Close Button
+    const closeModal = document.createElement('button')
+    closeModal.classList.add('close-modal-button')
+    closeModal.textContent = "Cancel";
+    closeModal.addEventListener('click', () => {
+        taskModal.replaceChildren()
+        taskModal.close()
+        
+    })
+
+    newTaskButton.addEventListener('click', (e) => {
+        e.preventDefault()
+        if (taskName.value) { 
+                const newTask = new Task(taskName.value, currentPriority, description.value, notes.value)
+                goal.addTask(newTask)
+                clearTasks(goal);
+                buildTasksView(goal, cardWrapper);
+                taskModal.replaceChildren();
+                taskModal.close();
+            }
+    })
+
+    priority.append(optionLow, optionMedium, optionHigh)
+    taskForm.append(taskName, description, priority, notes, newTaskButton)
+    taskModal.append(taskForm, closeModal)
+}
+
+function clearContent() {
+    const content = document.querySelector('#content');
+    content.replaceChildren();
+}
+
+function clearTasks(goal) {
+    const allTasksLists = document.querySelectorAll('.tasks-list');
+    for (let currentTaskList of allTasksLists) {
+        currentTaskList.remove()
+    }
+}

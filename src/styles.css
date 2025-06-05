@@ -14,16 +14,28 @@
   --text-input: #f5f5f5;
 }
 
-h1, h2, h3 {
-  margin: 0;
-}
-
 body {
   height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
   background-color: var(--background);
   color: var(--text);
+}
+
+h1, h2, h3 {
+  margin: 0;
+}
+
+button {
+  background-color: var(--background);
+  border: none;
+  color: var(--text);
+  border-radius: 1rem;
+  padding: .25rem;
+}
+
+button:hover {
+  background-color: #272527;
 }
 
 header {
@@ -40,6 +52,17 @@ footer {
 
 p {
   margin: 0;
+}
+
+::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+dialog {
+  background-color: var(--card);
+  border: var(--border);
+  color: var(--text);
+  height: 10rem;
 }
 
 .smile {
@@ -60,6 +83,11 @@ p {
 
 }
 
+/* Try to add priority color to card wrapper when extended */
+/* .card-wrapper {
+  border-radius: 1rem;
+} */
+
 /* Goal Card stuffs */
 /*  */
 .goal-card {
@@ -71,9 +99,19 @@ p {
 
 }
 
+.add-goal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-goal:hover {
+  background-color: #353535;
+}
+
 .top-line {
   display: grid;
-  grid-template-columns: 2fr 4fr 1fr;
+  grid-template-columns: 2fr 5fr 1fr 1fr;
   justify-content: space-between;
   align-items: flex-start;
   border-bottom: solid var(--border) 1px;
@@ -91,6 +129,18 @@ p {
 .view-tasks-button {
   margin: 0 4rem 0 4rem;
 }
+/* Delete Goal Button */
+.delete-goal-button {
+  width: 1.6rem;
+  height: 1.6rem;
+  justify-self: end;
+  background-color: rgb(169, 2, 36);
+  border: none;
+}
+.delete-goal-button:hover {
+  background-color: crimson;
+
+}
 /* Data Fields */
 .creation-date,
 .due-date {
@@ -104,7 +154,7 @@ p {
 .tasks-list {
   display: flex;
   flex-direction: column;
-  margin-left: 2rem;
+  margin-left: 1rem;
   margin-bottom: .5rem;
 
 }
@@ -130,9 +180,14 @@ p {
   border-left: none;
   box-shadow: -12px 0px 20px -14px rgb(33, 33, 255), inset 12px 0px 10px -8px blue ;
 }
-.priority-done {
+.done {
   border-left: none;
   box-shadow: -12px 0px 20px -14px var(--complete), inset 12px 0px 10px -8px var(--complete) ;
+}
+.complete-toggle {
+  flex-shrink: none;
+  width: 1rem;
+  height: 1rem;
 }
 .complete-toggle {
   flex-shrink: none;
@@ -142,7 +197,15 @@ p {
 .complete-false {
   box-shadow: 0px 0px 2px 2px var(--accent);
 }
+.complete-false:hover {
+  box-shadow: 0px 0px 4px 4px var(--accent);
+}
 .complete-true {
   background-color: var(--complete);
   box-shadow: 0px 0px 2px 2px var(--complete);
 }
+.complete-true:hover {
+  background-color: var(--complete);
+  box-shadow: 0px 0px 4px 4px var(--complete);
+}
+

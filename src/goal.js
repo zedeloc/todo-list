@@ -4,7 +4,7 @@ class Goal {
     tasks = [];
     id = crypto.randomUUID();
     
-    constructor(goalName, description, dueDate, priority, notes=undefined, creationDate=new Date()) {
+    constructor(goalName, dueDate, description=undefined, priority='medium', notes=undefined, creationDate=new Date()) {
         this.goalName = goalName;
         this.description = description;
         this.dueDate = dueDate;

@@ -8,7 +8,7 @@ makeHeader()
 
 const goalManager = new GoalManager();
 // TEST - High priority goal
-const goal1 = new Goal("Clean Dishes", "Clean all the dishes in the house.", "tonight", "high");
+const goal1 = new Goal("Clean Dishes", "tonight", "Clean all the dishes in the house.", "high");
 goalManager.addGoal(goal1);
 
 const task1 = new Task("Collect all the dishes in my room", "high");
@@ -23,7 +23,7 @@ goalManager.goals[0].addTask(task3);
 goalManager.goals[0].addTask(task4);
 goalManager.goals[0].addTask(task5);
 // TEST - Medium priority goal
-const goal2 = new Goal("Have fun", "Just do somethin you like", "tomorrow", "medium");
+const goal2 = new Goal("Have fun", "tomorrow", "Just do somethin you like", "medium");
 goalManager.addGoal(goal2);
 
 const task1b = new Task("Play Vidya");
@@ -38,7 +38,7 @@ goalManager.goals[1].addTask(task3b);
 goalManager.goals[1].addTask(task4b);
 goalManager.goals[1].addTask(task5b);
 // TEST - Low priority goal
-const goal3 = new Goal("Clean Dishes", "Clean all the dishes in the house.", "tonight", "low");
+const goal3 = new Goal("Clean Dishes", "tonight", "Clean all the dishes in the house.", "low");
 goalManager.addGoal(goal3);
 
 const task1c = new Task("Collect all the dishes in my room", "high");
