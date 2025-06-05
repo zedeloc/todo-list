@@ -22,6 +22,7 @@ export function buildGoalsView(goalManager) {
         // Build Card
         const cardWrapper = document.createElement('div');
         cardWrapper.classList.add('.card-wrapper');
+        cardWrapper.setAttribute('id', goal.id)
         // cardWrapper.setAttribute('id', goal.id);
         const goalCard = document.createElement('div');
         // build two lines
@@ -173,10 +174,21 @@ function buildTasksView(goal, cardWrapper) {
     cardWrapper.append(tasksList);
 
 }
-
-function closeTasksView(cardWrapper) {
-    cardWrapper.removeChild(cardWrapper.lastChild)
+// 
+// 
+// 
+// Accidentily deleting goals from the dom
+function closeTasksView(goal) {
+    const thisCardWrapper = document.getElementById(goal.id)
+    if (thisCardWrapper.querySelector('.tasks-list')) {
+        thisCardWrapper.querySelector('.tasks-list').remove();
+    }
+    
 }
+// 
+// 
+// 
+// 
 
 function createGoal(goalManager) {
     const openModal = document.querySelector('[data-open-modal]');
@@ -314,7 +326,7 @@ function createTask(goal, cardWrapper) {
         if (taskName.value) { 
                 const newTask = new Task(taskName.value, currentPriority, description.value, notes.value)
                 goal.addTask(newTask)
-                clearTasks(goal);
+                closeTasksView(goal);
                 buildTasksView(goal, cardWrapper);
                 taskModal.replaceChildren();
                 taskModal.close();
