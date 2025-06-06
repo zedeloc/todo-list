@@ -66,9 +66,15 @@ export function buildGoalsView(goalManager) {
         const creationDate = document.createElement('div');
         creationDate.classList.add('creation-date');
         creationDate.textContent = "Created: " + goal.creationDate;
+
+        const goalEditButton = document.createElement('button');
+        goalEditButton.textContent = "Edit Task"
+        goalEditButton.addEventListener('click', () => {
+            editGoal(goal, goalManager, cardWrapper);
+        })
         // Add to DOM
         topLine.append(name, description, dueDate, deleteGoalButton);
-        bottomLine.append(notes, viewTasksButton, creationDate)
+        bottomLine.append(notes, viewTasksButton, creationDate, goalEditButton)
         goalCard.append(topLine, bottomLine);
         cardWrapper.append(goalCard);
         content.append(cardWrapper);
@@ -382,7 +388,42 @@ function buildEditForm(obj, objectName) {
 
     return [ editEntryForm, name, description, priority, priorityWrapper, optionLow, optionMedium, optionHigh, notes ]
 }
+// 
+// 
+// FOCUS ON THIS!!!
+function editGoal(goal, goalManager) {
+    const modalTitle = createModalTitle("Edit Goal");
+    const [ openModal, closedModal, modal ] = displayModal();
+    modal.showModal();
 
+    const [ editEntryForm, name, description, priority, priorityWrapper, optionLow, optionMedium, optionHigh, notes ] = buildEditForm(goal, "Goal");
+    // Priority change is a little screwy
+    let currentPriority = goal.priority;
+    priority.addEventListener('change', () => {
+        currentPriority = priority.value;
+        console.log(currentPriority);
+    })
+    const [ submitModal, closeModal ] = createModalButtons(modal);
+    submitModal.addEventListener('click', (e) => {
+        e.preventDefault()
+        if (name.value) {
+            goal.name = name.value;
+            goal.description = description.value;
+            goal.priority = currentPriority;
+            goal.notes = notes.value;
+            clearContent()
+            buildGoalsView(goalManager)
+            modal.replaceChildren();
+            modal.close();
+        }
+    })
+    priority.append(optionLow, optionMedium, optionHigh);
+    editEntryForm.append(modalTitle, name, description, priorityWrapper, closeModal, notes,  submitModal);
+    modal.append(editEntryForm);
+}
+// 
+// 
+// 
 function editTask(task, goal, cardWrapper) {
     const modalTitle = createModalTitle("Edit Task");
     const [ openModal, closedModal, modal ] = displayModal();
