@@ -25,12 +25,9 @@ export function buildGoalsView(goalManager) {
         cardWrapper.setAttribute('id', goal.id)
         // cardWrapper.setAttribute('id', goal.id);
         const goalCard = document.createElement('div');
-        // build two lines
-        const topLine = document.createElement('div');
-        topLine.classList.add('top-line');
-        const bottomLine = document.createElement('div');
-        bottomLine.classList.add('bottom-line');
         goalCard.classList.add("goal-card");
+        // build two lines
+        const [ topLine, bottomLine ] = createTopBottomLine()
         // View Tasks button
         const viewTasksButton = document.createElement('button')
         viewTasksButton.classList.add('view-tasks-button');
@@ -48,51 +45,33 @@ export function buildGoalsView(goalManager) {
                 viewTasksButton.classList.add('closed');
                 viewTasksButton.textContent = 'Add or View Tasks';
             }
-            
         })
         // Delete Goal button 
         const deleteGoalButton = document.createElement('button');
-        deleteGoalButton.classList.add('delete-goal-button');
+        deleteGoalButton.classList.add('delete-button');
         deleteGoalButton.textContent = "x";
-
         deleteGoalButton.addEventListener('click', () => {
             goalManager.removeGoal(goalManager.findGoalByID(goal.id));
             clearContent()
             buildGoalsView(goalManager);
         })
-
         // Priority level lighting
         goalCard.classList.add(`${goal.priority}`)
         // Fetch card contents
-        const goalName = document.createElement('h2');
-        goalName.classList.add('goal-name'); //try to not use this class
-        goalName.textContent = goal.goalName;
-        const description = document.createElement('p')
-        description.classList.add('goal-description');
-        description.textContent = goal.description;
+        const [ name, description, priority, notes ] = fetchObjectProperties(goal);
+        // Properties unique to object
         const dueDate = document.createElement('p')
         dueDate.classList.add('due-date');
-        dueDate.textContent = goal.dueDate;
-        const priority = document.createElement('div');
-        priority.classList.add(`${goal.priority}`)
-        const notes = document.createElement('div');
-        notes.classList.add('notes');
-        notes.textContent = goal.notes;
+        dueDate.textContent = "Due: " + goal.dueDate;
         const creationDate = document.createElement('div');
         creationDate.classList.add('creation-date');
-        creationDate.textContent = goal.creationDate;
-
-
-        topLine.append(goalName, description, dueDate, deleteGoalButton);
+        creationDate.textContent = "Created: " + goal.creationDate;
+        // Add to DOM
+        topLine.append(name, description, dueDate, deleteGoalButton);
         bottomLine.append(notes, viewTasksButton, creationDate)
-
         goalCard.append(topLine, bottomLine);
         cardWrapper.append(goalCard);
-
         content.append(cardWrapper);
-
-        i++
-
     }
     const addGoal = document.createElement('div');
     addGoal.classList.add('goal-card');
@@ -102,8 +81,40 @@ export function buildGoalsView(goalManager) {
         createGoal(goalManager)
     })
     content.append(addGoal)
+}
 
-    
+function createObjectCard(obj, elementClassName) {
+    const objectCard = document.createElement('div');
+    objectCard.classList.add(elementClassName);
+    objectCard.classList.add(`${obj.priority}`);
+    return objectCard;
+}
+
+function fetchObjectProperties(obj, parentElement) {
+        const name = document.createElement('h3');
+        name.classList.add('objName'); //try to not use this class
+        name.textContent = obj.name;
+
+        const description = document.createElement('p');
+        description.classList.add('goal-description');
+        description.textContent = "Description: " + obj.description;
+
+        const priority = document.createElement('div');
+        priority.classList.add(`${obj.priority}`);
+
+        const notes = document.createElement('div');
+        notes.classList.add('notes');
+        notes.textContent = "Notes: " + obj.notes;
+
+        return [ name, description, priority, notes ];
+}
+
+function createTopBottomLine() {
+    const topLine = document.createElement('div');
+    topLine.classList.add('top-line');
+    const bottomLine = document.createElement('div');
+    bottomLine.classList.add('bottom-line');
+    return [ topLine, bottomLine ];
 }
 
 function buildTasksView(goal, cardWrapper) {
@@ -113,32 +124,17 @@ function buildTasksView(goal, cardWrapper) {
     tasksList.classList.add('tasks-list');
     // Fetch task contents
     for (let task of currentTasks) {
-
-        const taskCard = document.createElement('div');
-        taskCard.classList.add('task-card')
-        taskCard.classList.add(`${task.priority}`)
-        // build two lines
-        const topLine = document.createElement('div');
-        topLine.classList.add('top-line');
-        const bottomLine = document.createElement('div');
-        bottomLine.classList.add('bottom-line')
-        
-        const taskName = document.createElement('h3');
-        taskName.classList.add('taskName') //try to not use this class
-        taskName.textContent = task.taskName;
-
-        const taskDescription = document.createElement('p')
-        taskDescription.classList.add('goal-description');
-        taskDescription.textContent = task.description;
-        const taskPriority = document.createElement('div');
-        taskPriority.classList.add(`${task.priority}`)
-        const taskNotes = document.createElement('div');
-        taskNotes.classList.add('notes');
-        taskNotes.textContent = task.notes;
+        // Create the card to store the data
+        const objectCard = createObjectCard(task, 'task-card')
+        // Fetch Object Properties destructuring
+        const [ name, description, priority, notes ] = fetchObjectProperties(task, tasksList, 'task-card')
+        // Build the two lines
+        const [ topLine, bottomLine ] = createTopBottomLine();
+        // Parameters unique to object
         const taskIsComplete = document.createElement('div')
         taskIsComplete.classList.add('complete-description')
-        taskIsComplete.textContent = "Completion status: ";
-
+        taskIsComplete.textContent = `Completion status: ${task.isComplete}`;
+        // Toggle complete button
         const completeToggle = document.createElement('span')
         completeToggle.classList.add('complete-toggle')
         completeToggle.classList.add(`complete-${task.isComplete}`)
@@ -152,21 +148,22 @@ function buildTasksView(goal, cardWrapper) {
                 task.isComplete = false;
                 completeToggle.classList.add(`complete-${task.isComplete}`)
             }
+            closeTasksView(goal);
+            buildTasksView(goal, cardWrapper);
         }
         )
-
+        // Edit Button
         const taskEditButton = document.createElement('button');
         taskEditButton.textContent = "Edit Task"
         taskEditButton.addEventListener('click', () => {
             editTask(task, goal, cardWrapper);
         })
-        topLine.append(taskName, taskDescription);
-        bottomLine.append(taskNotes, taskIsComplete, completeToggle, taskEditButton)
-        taskCard.append(topLine, bottomLine)
-        tasksList.append(taskCard);
-
+        // Update DOM
+        topLine.append(name, description);
+        bottomLine.append(notes, taskIsComplete, completeToggle, taskEditButton)
+        objectCard.append(topLine, bottomLine)
+        tasksList.append(objectCard);
     }
-
     const addTask = document.createElement('div');
     addTask.classList.add('task-card');
     addTask.classList.add('add-goal');
@@ -175,39 +172,35 @@ function buildTasksView(goal, cardWrapper) {
         createTask(goal, cardWrapper)
     })
     tasksList.append(addTask)
-
-
     cardWrapper.append(tasksList);
-
 }
-// 
-// 
-// 
-// Accidentily deleting goals from the dom
+
 function closeTasksView(goal) {
     const thisCardWrapper = document.getElementById(goal.id)
     if (thisCardWrapper.querySelector('.tasks-list')) {
         thisCardWrapper.querySelector('.tasks-list').remove();
     }
-    
 }
-// 
-// 
-// 
-// 
+
+function createModalTitle(titleString) {
+    const modalTitle = document.createElement('div');
+    modalTitle.classList.add('modal-header');
+    modalTitle.textContent = titleString;
+    return modalTitle;
+}
 
 function createGoal(goalManager) {
+    const modalTitle = createModalTitle("Create New Goal")
     const [ openModal, closedModal, modal ] = displayModal();
     modal.showModal();
-
     // form
     const goalForm = document.createElement('form');
     const goalName = document.createElement('input')
     goalName.setAttribute('type', 'text')
-    goalName.setAttribute('placeholder', 'Name *Required*')
+    goalName.setAttribute('placeholder', 'Goal Name *Required*')
     // goalName.setAttribute('required', 'required')
     const description = document.createElement('input');
-    description.setAttribute('placeholder', 'Description')
+    description.setAttribute('placeholder', 'Goal Description')
     // description.setAttribute('required', '');
     const dueDateWrapper = document.createElement('div');
     const dueDateLabel = document.createElement('label');
@@ -217,8 +210,6 @@ function createGoal(goalManager) {
     dueDate.setAttribute('type', 'date');
     dueDate.setAttribute('id', 'dueDateCal');
     dueDateWrapper.append(dueDateLabel, dueDate);
-    // dueDate.setAttribute('required', '')
-    
     const priority = document.createElement('select');
     priority.id = 'priority';
     console.log(priority.value)
@@ -243,15 +234,10 @@ function createGoal(goalManager) {
         currentPriority = priority.value;
         console.log(currentPriority)
     })
-
-
-
     const notes = document.createElement('textarea');
-
-    notes.setAttribute('placeholder', 'Add Notes')
+    notes.setAttribute('placeholder', 'Add Goal Notes')
     // Create Form Buttons with Destructuring
     const [ submitModal, closeModal ] = createModalButtons(modal);
-
     submitModal.addEventListener('click', (e) => {
         e.preventDefault()
         if (goalName.value && dueDate.value) { 
@@ -265,24 +251,21 @@ function createGoal(goalManager) {
     })
 
     priority.append(optionLow, optionMedium, optionHigh)
-    goalForm.append(goalName, description, dueDateWrapper, closeModal, priorityWrapper, notes, submitModal)
+    goalForm.append(modalTitle, goalName, description, dueDateWrapper, closeModal, priorityWrapper, notes, submitModal)
     modal.append(goalForm, )
 }
 
 function createTask(goal, cardWrapper) {
+    const modalTitle = createModalTitle("Create Task")
     const [ openModal, closedModal, modal ] = displayModal();
     modal.showModal();
-
     // form
     const taskForm = document.createElement('form');
     const taskName = document.createElement('input')
     taskName.setAttribute('type', 'text')
     taskName.setAttribute('placeholder', 'Task Name')
-    // goalName.setAttribute('required', 'required')
     const description = document.createElement('input');
     description.setAttribute('placeholder', 'Task Description')
-    // description.setAttribute('required', '');
-    
     const priority = document.createElement('select');
     priority.id = 'priority';
     console.log(priority.value)
@@ -291,7 +274,6 @@ function createTask(goal, cardWrapper) {
     const priorityLabel = document.createElement('label')
     priorityLabel.textContent = "Priority Level:";
     priorityWrapper.append(priorityLabel, priority)
-    // priority.setAttribute('required', '')
     const optionLow = document.createElement('option');
     optionLow.setAttribute('value', 'low');
     optionLow.textContent = "Low"
@@ -312,7 +294,6 @@ function createTask(goal, cardWrapper) {
     notes.setAttribute('placeholder', 'Task Notes');
     // Create Modal Buttons using Destructuring
     const [ submitModal, closeModal ] = createModalButtons(modal);
-
     submitModal.addEventListener('click', (e) => {
         e.preventDefault()
         if (taskName.value) { 
@@ -324,11 +305,9 @@ function createTask(goal, cardWrapper) {
                 modal.close();
             }
     })
-
-    
     const placeHoldingElement = document.createElement('div')
     priority.append(optionLow, optionMedium, optionHigh);
-    taskForm.append(taskName, description, priorityWrapper, closeModal, notes, placeHoldingElement, submitModal);
+    taskForm.append(modalTitle, taskName, description, priorityWrapper, closeModal, notes, placeHoldingElement, submitModal);
     modal.append(taskForm, );
 }
 
@@ -339,15 +318,13 @@ function createModalButtons(modal) {
     submitModal.setAttribute('type', 'button');
     submitModal.classList.add('submit-modal-button');
     submitModal.textContent = "Submit";
-    
     // Close Modal
     const closeModal = document.createElement('button');
-    closeModal.classList.add('delete-goal-button');
+    closeModal.classList.add('delete-button');
     closeModal.textContent = "x";
     closeModal.addEventListener('click', () => {
         modal.replaceChildren()
         modal.close()
-        
     });
     modal.addEventListener('keydown', (e) => {
         const key = e.key;
@@ -355,7 +332,6 @@ function createModalButtons(modal) {
             e.preventDefault();
             modal.replaceChildren();
             modal.close();
-
         }
     })
     return [ submitModal, closeModal ];
@@ -371,35 +347,25 @@ function displayModal() {
     const closedModal = document.querySelector('[data-close-Modal]');
     const modal  = document.querySelector('[data-modal-new]');
     return [ openModal, closedModal, modal ]
-
 }
 
-function editTask(task, goal, cardWrapper) {
-    const [ openModal, closedModal, modal ] = displayModal();
-    modal.showModal();
-
-    // form
-    const taskForm = document.createElement('form');
-    const taskName = document.createElement('input');
-    taskName.setAttribute('type', 'text');
-    taskName.setAttribute('value', task.taskName);
-    // goalName.setAttribute('required', 'required')
+function buildEditForm(obj, objectName) {
+    const editEntryForm = document.createElement('form');
+    const name = document.createElement('input');
+    name.setAttribute('type', 'text');
+    name.setAttribute('value', obj.name);
     const description = document.createElement('input');
-    description.setAttribute('placeholder', 'Task Description');
-    description.setAttribute('value', task.description);
-    
-    // description.setAttribute('required', '');
-    
+    description.setAttribute('placeholder', `${objectName} Description`);
+    description.setAttribute('value', obj.description);
     const priority = document.createElement('select');
     priority.id = 'priority';
-    priority.setAttribute('defaultValue', task.priority)
-    priority.setAttribute('value', task.priority);
+    priority.setAttribute('defaultValue', obj.priority)
+    priority.setAttribute('value', obj.priority);
     const priorityWrapper = document.createElement('div')
     priorityWrapper.classList.add('priority-wrapper')
     const priorityLabel = document.createElement('label')
     priorityLabel.textContent = "Priority Level:";
     priorityWrapper.append(priorityLabel, priority)
-    // priority.setAttribute('required', '')
     const optionLow = document.createElement('option');
     optionLow.setAttribute('value', 'low');
     optionLow.textContent = "Low";
@@ -409,35 +375,41 @@ function editTask(task, goal, cardWrapper) {
     const optionHigh = document.createElement('option');
     optionHigh.textContent = "High"
     optionHigh.setAttribute('value', 'high');
+    // 
+    const notes = document.createElement('textarea');
+    notes.setAttribute('placeholder', `${objectName} Notes`);
+    notes.setAttribute('value', obj.notes);
+
+    return [ editEntryForm, name, description, priority, priorityWrapper, optionLow, optionMedium, optionHigh, notes ]
+}
+
+function editTask(task, goal, cardWrapper) {
+    const modalTitle = createModalTitle("Edit Task");
+    const [ openModal, closedModal, modal ] = displayModal();
+    modal.showModal();
+
+    const [ editEntryForm, name, description, priority, priorityWrapper, optionLow, optionMedium, optionHigh, notes ] = buildEditForm(task, "Task")
+    // Priority change is a little screwy
     let currentPriority = task.priority;
     priority.addEventListener('change', () => {
         currentPriority = priority.value;
         console.log(currentPriority);
     })
-    // 
-    const notes = document.createElement('textarea');
-    notes.setAttribute('placeholder', "Task Notes");
-    notes.setAttribute('value', task.notes);
-    // Create Modal Buttons using Destructuring
     const [ submitModal, closeModal ] = createModalButtons(modal);
-
     submitModal.addEventListener('click', (e) => {
         e.preventDefault()
-        if (taskName.value) {
-            task.taskName = taskName.value;
+        if (name.value) {
+            task.name = name.value;
             task.description = description.value;
             task.priority = currentPriority;
             task.notes = notes.value;
-
             closeTasksView(goal);
             buildTasksView(goal, cardWrapper);
             modal.replaceChildren();
             modal.close();
         }})
-    // Close Button
-    
     const placeHolderElement = document.createElement('div')
     priority.append(optionLow, optionMedium, optionHigh);
-    taskForm.append(taskName, description, priorityWrapper, closeModal, notes, placeHolderElement,  submitModal);
-    modal.append(taskForm);
+    editEntryForm.append(modalTitle, name, description, priorityWrapper, closeModal, notes, placeHolderElement,  submitModal);
+    modal.append(editEntryForm);
 }

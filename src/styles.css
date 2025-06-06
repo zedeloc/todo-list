@@ -19,7 +19,8 @@ dialog {
   border: solid var(--border) 2px;
   border-radius: 1rem;
   color: var(--text);
-  height: fit-content;
+  /* height: fit-content; */
+  max-width: 1000px;
 
 }
 
@@ -35,8 +36,17 @@ select {
 form {
   display: grid;
   grid-template-columns: 2fr 6fr 3fr .25fr;
+  grid-template-rows: 60px 30px 90px;
   gap: 1rem;
   row-gap: 2rem;
+  padding: 1rem;
+  grid-template-areas: "modal-header modal-header modal-header delete-button"
+  
+}
+
+.modal-header {
+  font-size: 48px;
+  grid-area: modal-header;
 }
 
 input,
@@ -168,14 +178,16 @@ p {
   margin: 0 4rem 0 4rem;
 }
 /* Delete Goal Button */
-.delete-goal-button {
+.delete-button {
   width: 1.6rem;
   height: 1.6rem;
   justify-self: end;
   background-color: rgb(169, 2, 36);
   border: none;
+  grid-area: delete-button;
 }
-.delete-goal-button:hover {
+
+.delete-button:hover {
   background-color: crimson;
 
 }
