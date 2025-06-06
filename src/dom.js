@@ -154,8 +154,14 @@ function buildTasksView(goal, cardWrapper) {
             }
         }
         )
+
+        const taskEditButton = document.createElement('button');
+        taskEditButton.textContent = "Edit Task"
+        taskEditButton.addEventListener('click', () => {
+            editTask(task, goal, cardWrapper);
+        })
         topLine.append(taskName, taskDescription);
-        bottomLine.append(taskNotes, taskIsComplete, completeToggle)
+        bottomLine.append(taskNotes, taskIsComplete, completeToggle, taskEditButton)
         taskCard.append(topLine, bottomLine)
         tasksList.append(taskCard);
 
@@ -163,7 +169,7 @@ function buildTasksView(goal, cardWrapper) {
 
     const addTask = document.createElement('div');
     addTask.classList.add('task-card');
-    addTask.classList.add('add-task');
+    addTask.classList.add('add-goal');
     addTask.textContent = "+ + A d d   T a s k + +";
     addTask.addEventListener('click', () => {
         createTask(goal, cardWrapper)
@@ -191,26 +197,36 @@ function closeTasksView(goal) {
 // 
 
 function createGoal(goalManager) {
-    const openModal = document.querySelector('[data-open-modal]');
-    const closedModal = document.querySelector('[data-close-Modal]');
-    const goalModal  = document.querySelector('[data-modal-new]');
-    goalModal.showModal();
+    const [ openModal, closedModal, modal ] = displayModal();
+    modal.showModal();
 
     // form
     const goalForm = document.createElement('form');
     const goalName = document.createElement('input')
     goalName.setAttribute('type', 'text')
-    goalName.setAttribute('placeholder', 'Name')
+    goalName.setAttribute('placeholder', 'Name *Required*')
     // goalName.setAttribute('required', 'required')
     const description = document.createElement('input');
     description.setAttribute('placeholder', 'Description')
     // description.setAttribute('required', '');
+    const dueDateWrapper = document.createElement('div');
+    const dueDateLabel = document.createElement('label');
+    dueDateLabel.textContent = "Due Date (Required)"
+    dueDateLabel.setAttribute('for', 'dueDateCal');
     const dueDate = document.createElement('input');
-    dueDate.setAttribute('type', 'date')
+    dueDate.setAttribute('type', 'date');
+    dueDate.setAttribute('id', 'dueDateCal');
+    dueDateWrapper.append(dueDateLabel, dueDate);
     // dueDate.setAttribute('required', '')
+    
     const priority = document.createElement('select');
     priority.id = 'priority';
     console.log(priority.value)
+    const priorityWrapper = document.createElement('div')
+    priorityWrapper.classList.add('priority-wrapper')
+    const priorityLabel = document.createElement('label')
+    priorityLabel.textContent = "Priority Level:";
+    priorityWrapper.append(priorityLabel, priority)
     // priority.setAttribute('required', '')
     const optionLow = document.createElement('option');
     optionLow.setAttribute('value', 'low');
@@ -230,63 +246,51 @@ function createGoal(goalManager) {
 
 
 
-    const notes = document.createElement('input');
-    notes.setAttribute('type', 'textbox');
+    const notes = document.createElement('textarea');
+
     notes.setAttribute('placeholder', 'Add Notes')
-    const newGoalButton = document.createElement('button');
-    newGoalButton.setAttribute('type', 'button')
-    newGoalButton.classList.add('new-goal-button')
-    newGoalButton.textContent = "Submit New Goal";
+    // Create Form Buttons with Destructuring
+    const [ submitModal, closeModal ] = createModalButtons(modal);
 
-    
-    const closeModal = document.createElement('button')
-    closeModal.classList.add('close-modal-button')
-    closeModal.textContent = "Cancel";
-    closeModal.addEventListener('click', () => {
-        goalModal.replaceChildren()
-        goalModal.close()
-        
-    })
-
-
-
-    newGoalButton.addEventListener('click', (e) => {
-        // const getPriority = document.querySelector('#priority').value
-        // console.log(getPriority)
+    submitModal.addEventListener('click', (e) => {
         e.preventDefault()
         if (goalName.value && dueDate.value) { 
                 const newGoal = new Goal(goalName.value,  dueDate.value, description.value, currentPriority, notes.value)
                 goalManager.addGoal(newGoal)
                 clearContent()
                 buildGoalsView(goalManager);
-                goalModal.replaceChildren()
-                goalModal.close()
+                modal.replaceChildren()
+                modal.close()
             }
     })
 
     priority.append(optionLow, optionMedium, optionHigh)
-    goalForm.append(goalName, description, dueDate, priority, notes, newGoalButton)
-    goalModal.append(goalForm, closeModal)
+    goalForm.append(goalName, description, dueDateWrapper, closeModal, priorityWrapper, notes, submitModal)
+    modal.append(goalForm, )
 }
 
 function createTask(goal, cardWrapper) {
-    const openModal = document.querySelector('[data-open-modal]');
-    const closedModal = document.querySelector('[data-close-Modal]');
-    const taskModal  = document.querySelector('[data-modal-new]');
-    taskModal.showModal();
+    const [ openModal, closedModal, modal ] = displayModal();
+    modal.showModal();
 
     // form
     const taskForm = document.createElement('form');
     const taskName = document.createElement('input')
     taskName.setAttribute('type', 'text')
-    taskName.setAttribute('placeholder', 'Name')
+    taskName.setAttribute('placeholder', 'Task Name')
     // goalName.setAttribute('required', 'required')
     const description = document.createElement('input');
-    description.setAttribute('placeholder', 'Description')
+    description.setAttribute('placeholder', 'Task Description')
     // description.setAttribute('required', '');
+    
     const priority = document.createElement('select');
     priority.id = 'priority';
     console.log(priority.value)
+    const priorityWrapper = document.createElement('div')
+    priorityWrapper.classList.add('priority-wrapper')
+    const priorityLabel = document.createElement('label')
+    priorityLabel.textContent = "Priority Level:";
+    priorityWrapper.append(priorityLabel, priority)
     // priority.setAttribute('required', '')
     const optionLow = document.createElement('option');
     optionLow.setAttribute('value', 'low');
@@ -304,38 +308,57 @@ function createTask(goal, cardWrapper) {
         console.log(currentPriority)
     })
     // 
-    const notes = document.createElement('input');
-    notes.setAttribute('type', 'textbox');
-    notes.setAttribute('placeholder', 'Add Notes')
-    const newTaskButton = document.createElement('button');
-    newTaskButton.setAttribute('type', 'button')
-    newTaskButton.classList.add('new-goal-button')
-    newTaskButton.textContent = "Submit New Goal";
-    // Close Button
-    const closeModal = document.createElement('button')
-    closeModal.classList.add('close-modal-button')
-    closeModal.textContent = "Cancel";
-    closeModal.addEventListener('click', () => {
-        taskModal.replaceChildren()
-        taskModal.close()
-        
-    })
+    const notes = document.createElement('textarea');
+    notes.setAttribute('placeholder', 'Task Notes');
+    // Create Modal Buttons using Destructuring
+    const [ submitModal, closeModal ] = createModalButtons(modal);
 
-    newTaskButton.addEventListener('click', (e) => {
+    submitModal.addEventListener('click', (e) => {
         e.preventDefault()
         if (taskName.value) { 
-                const newTask = new Task(taskName.value, currentPriority, description.value, notes.value)
-                goal.addTask(newTask)
+                const newTask = new Task(taskName.value, currentPriority, description.value, notes.value);
+                goal.addTask(newTask);
                 closeTasksView(goal);
                 buildTasksView(goal, cardWrapper);
-                taskModal.replaceChildren();
-                taskModal.close();
+                modal.replaceChildren();
+                modal.close();
             }
     })
 
-    priority.append(optionLow, optionMedium, optionHigh)
-    taskForm.append(taskName, description, priority, notes, newTaskButton)
-    taskModal.append(taskForm, closeModal)
+    
+    const placeHoldingElement = document.createElement('div')
+    priority.append(optionLow, optionMedium, optionHigh);
+    taskForm.append(taskName, description, priorityWrapper, closeModal, notes, placeHoldingElement, submitModal);
+    modal.append(taskForm, );
+}
+
+function createModalButtons(modal) {
+    // SubmitModal button requires independent event listener that calls appropriate class
+    // Submit
+    const submitModal = document.createElement('button');
+    submitModal.setAttribute('type', 'button');
+    submitModal.classList.add('submit-modal-button');
+    submitModal.textContent = "Submit";
+    
+    // Close Modal
+    const closeModal = document.createElement('button');
+    closeModal.classList.add('delete-goal-button');
+    closeModal.textContent = "x";
+    closeModal.addEventListener('click', () => {
+        modal.replaceChildren()
+        modal.close()
+        
+    });
+    modal.addEventListener('keydown', (e) => {
+        const key = e.key;
+        if (key === 'Escape') {
+            e.preventDefault();
+            modal.replaceChildren();
+            modal.close();
+
+        }
+    })
+    return [ submitModal, closeModal ];
 }
 
 function clearContent() {
@@ -343,9 +366,78 @@ function clearContent() {
     content.replaceChildren();
 }
 
-function clearTasks(goal) {
-    const allTasksLists = document.querySelectorAll('.tasks-list');
-    for (let currentTaskList of allTasksLists) {
-        currentTaskList.remove()
-    }
+function displayModal() {
+    const openModal = document.querySelector('[data-open-modal]');
+    const closedModal = document.querySelector('[data-close-Modal]');
+    const modal  = document.querySelector('[data-modal-new]');
+    return [ openModal, closedModal, modal ]
+
+}
+
+function editTask(task, goal, cardWrapper) {
+    const [ openModal, closedModal, modal ] = displayModal();
+    modal.showModal();
+
+    // form
+    const taskForm = document.createElement('form');
+    const taskName = document.createElement('input');
+    taskName.setAttribute('type', 'text');
+    taskName.setAttribute('value', task.taskName);
+    // goalName.setAttribute('required', 'required')
+    const description = document.createElement('input');
+    description.setAttribute('placeholder', 'Task Description');
+    description.setAttribute('value', task.description);
+    
+    // description.setAttribute('required', '');
+    
+    const priority = document.createElement('select');
+    priority.id = 'priority';
+    priority.setAttribute('defaultValue', task.priority)
+    priority.setAttribute('value', task.priority);
+    const priorityWrapper = document.createElement('div')
+    priorityWrapper.classList.add('priority-wrapper')
+    const priorityLabel = document.createElement('label')
+    priorityLabel.textContent = "Priority Level:";
+    priorityWrapper.append(priorityLabel, priority)
+    // priority.setAttribute('required', '')
+    const optionLow = document.createElement('option');
+    optionLow.setAttribute('value', 'low');
+    optionLow.textContent = "Low";
+    const optionMedium = document.createElement('option');
+    optionMedium.setAttribute('value', 'medium');
+    optionMedium.textContent = "Medium";;
+    const optionHigh = document.createElement('option');
+    optionHigh.textContent = "High"
+    optionHigh.setAttribute('value', 'high');
+    let currentPriority = task.priority;
+    priority.addEventListener('change', () => {
+        currentPriority = priority.value;
+        console.log(currentPriority);
+    })
+    // 
+    const notes = document.createElement('textarea');
+    notes.setAttribute('placeholder', "Task Notes");
+    notes.setAttribute('value', task.notes);
+    // Create Modal Buttons using Destructuring
+    const [ submitModal, closeModal ] = createModalButtons(modal);
+
+    submitModal.addEventListener('click', (e) => {
+        e.preventDefault()
+        if (taskName.value) {
+            task.taskName = taskName.value;
+            task.description = description.value;
+            task.priority = currentPriority;
+            task.notes = notes.value;
+
+            closeTasksView(goal);
+            buildTasksView(goal, cardWrapper);
+            modal.replaceChildren();
+            modal.close();
+        }})
+    // Close Button
+    
+    const placeHolderElement = document.createElement('div')
+    priority.append(optionLow, optionMedium, optionHigh);
+    taskForm.append(taskName, description, priorityWrapper, closeModal, notes, placeHolderElement,  submitModal);
+    modal.append(taskForm);
 }

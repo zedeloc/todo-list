@@ -1,6 +1,6 @@
 export class Task {
     id = crypto.randomUUID();
-    constructor(taskName, priority="medium", description=undefined, notes=undefined, isComplete=false) {
+    constructor(taskName, priority="medium", description='', notes='', isComplete=false) {
         this.taskName = taskName;
         this.description = description;
         this.priority = priority;

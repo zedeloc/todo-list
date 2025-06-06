@@ -14,6 +14,46 @@
   --text-input: #f5f5f5;
 }
 
+dialog {
+  background-color: var(--card);
+  border: solid var(--border) 2px;
+  border-radius: 1rem;
+  color: var(--text);
+  height: fit-content;
+
+}
+
+
+select {
+  background-color: var(--text-field-background);
+  color: var(--text-input);
+  border: solid var(--text-field-border) 2px;
+  border-radius: 1rem;
+  height: 2.6rem;
+}
+
+form {
+  display: grid;
+  grid-template-columns: 2fr 6fr 3fr .25fr;
+  gap: 1rem;
+  row-gap: 2rem;
+}
+
+input,
+textarea {
+  font-size: 16px;
+  background-color: var(--text-field-background);
+  border: solid var(--text-field-border) 2px;
+  border-radius: 1rem;
+  color: var(--text-input);
+  padding: .5rem;
+}
+
+textarea {
+  height: 6rem;
+  width: 24rem;
+}
+
 body {
   height: calc(100vh - 60px);
   display: flex;
@@ -27,6 +67,7 @@ h1, h2, h3 {
 }
 
 button {
+  font-size: 16px;
   background-color: var(--background);
   border: none;
   color: var(--text);
@@ -58,12 +99,7 @@ p {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
-dialog {
-  background-color: var(--card);
-  border: var(--border);
-  color: var(--text);
-  height: 10rem;
-}
+
 
 .smile {
   font-size: 42px;
@@ -100,9 +136,11 @@ dialog {
 }
 
 .add-goal {
+  padding: 1rem;
+  width: fit-content;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-self: center;
+  align-self: center;
 }
 
 .add-goal:hover {
@@ -189,11 +227,7 @@ dialog {
   width: 1rem;
   height: 1rem;
 }
-.complete-toggle {
-  flex-shrink: none;
-  width: 1rem;
-  height: 1rem;
-}
+
 .complete-false {
   box-shadow: 0px 0px 2px 2px var(--accent);
 }
@@ -209,3 +243,24 @@ dialog {
   box-shadow: 0px 0px 4px 4px var(--complete);
 }
 
+.submit-modal-button {
+  width: 100%;
+  border: solid var(--border) 2px;
+  padding: .75rem;
+  justify-self: end;
+  align-self: start;
+}
+
+.submit-modal-button {
+  background-color: rgb(0, 0, 87);
+}
+
+.close-modal-button {
+  background-color: rgb(73, 0, 15);
+}
+
+.priority-wrapper {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
