@@ -8,7 +8,7 @@ makeHeader()
 
 const goalManager = new GoalManager();
 // TEST - High priority goal
-const goal1 = new Goal("Clean Dishes", "tonight", "Clean all the dishes in the house.", "high");
+const goal1 = new Goal("Clean Dishes", "2025-06-07", "Clean all the dishes in the house.", "high");
 goalManager.addGoal(goal1);
 
 const task1 = new Task("Collect all the dishes in my room", "high");
@@ -17,13 +17,13 @@ const task3 = new Task("Scrub them dishies", "high");
 const task4 = new Task("Put dishies on dishy rack to dry", "high");
 const task5 = new Task("Put them dishies away", "high");
 
-goalManager.goals[0].addTask(task1);
-goalManager.goals[0].addTask(task2);
-goalManager.goals[0].addTask(task3);
-goalManager.goals[0].addTask(task4);
-goalManager.goals[0].addTask(task5);
+goalManager.goals[0].add(task1);
+goalManager.goals[0].add(task2);
+goalManager.goals[0].add(task3);
+goalManager.goals[0].add(task4);
+goalManager.goals[0].add(task5);
 // TEST - Medium priority goal
-const goal2 = new Goal("Have fun", "tomorrow", "Just do somethin you like", "medium");
+const goal2 = new Goal("Have fun", "2025-06-07", "Just do somethin you like", "medium");
 goalManager.addGoal(goal2);
 
 const task1b = new Task("Play Vidya");
@@ -32,13 +32,13 @@ const task3b = new Task("Eat pizza", "high");
 const task4b = new Task("Dig in the dirt", "high");
 const task5b = new Task("Sleep in the back yard", "high");
 
-goalManager.goals[1].addTask(task1b);
-goalManager.goals[1].addTask(task2b);
-goalManager.goals[1].addTask(task3b);
-goalManager.goals[1].addTask(task4b);
-goalManager.goals[1].addTask(task5b);
+goalManager.goals[1].add(task1b);
+goalManager.goals[1].add(task2b);
+goalManager.goals[1].add(task3b);
+goalManager.goals[1].add(task4b);
+goalManager.goals[1].add(task5b);
 // TEST - Low priority goal
-const goal3 = new Goal("Clean Dishes", "tonight", "Clean all the dishes in the house.", "low");
+const goal3 = new Goal("Clean Dishes", "2025-06-07", "Clean all the dishes in the house.", "low");
 goalManager.addGoal(goal3);
 
 const task1c = new Task("Collect all the dishes in my room", "high");
@@ -47,12 +47,12 @@ const task3c = new Task("Scrub them dishies", "high");
 const task4c = new Task("Put dishies on dishy rack to dry", "high");
 const task5c = new Task("Put them dishies away", "high");
 
-goalManager.goals[2].addTask(task1c);
-goalManager.goals[2].addTask(task2c);
-goalManager.goals[2].addTask(task3c);
-goalManager.goals[2].addTask(task4c);
-goalManager.goals[2].addTask(task5c);
+goalManager.goals[2].add(task1c);
+goalManager.goals[2].add(task2c);
+goalManager.goals[2].add(task3c);
+goalManager.goals[2].add(task4c);
+goalManager.goals[2].add(task5c);
 
 
-buildGoalsView(goalManager)
+buildGoalsView(goalManager);
 

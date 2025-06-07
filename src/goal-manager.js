@@ -4,16 +4,15 @@ export class GoalManager {
     }
 
     findGoalByID(goalID) {
-        return this.goals.findIndex((goal) => {
-            goal.id === goalID;
-        })
+        return this.goals.findIndex((goal) => goal.id === goalID
+        )
     }
 
     addGoal(goal) {
         this.goals.push(goal);
     }
 
-    removeGoal(goalID) {
+    remove(goalID) {
         this.goals.splice(this.findGoalByID(goalID), 1);
     }
 

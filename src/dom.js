@@ -17,7 +17,8 @@ export function makeHeader() {
 export function buildGoalsView(goalManager) {
     const content = document.querySelector('#content')
     const currentGoals = goalManager.goals;
-    let i = 0
+    console.table(currentGoals)
+    let i = 0;
     for (let goal of currentGoals) {
         // Build Card
         const cardWrapper = document.createElement('div');
@@ -47,11 +48,11 @@ export function buildGoalsView(goalManager) {
             }
         })
         // Delete Goal button 
-        const deleteGoalButton = document.createElement('button');
-        deleteGoalButton.classList.add('delete-button');
-        deleteGoalButton.textContent = "x";
-        deleteGoalButton.addEventListener('click', () => {
-            goalManager.removeGoal(goalManager.findGoalByID(goal.id));
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('delete-button');
+        deleteButton.textContent = "x";
+        deleteButton.addEventListener('click', () => {
+            goalManager.remove(goal.id);
             clearContent()
             buildGoalsView(goalManager);
         })
@@ -73,11 +74,12 @@ export function buildGoalsView(goalManager) {
             editGoal(goal, goalManager, cardWrapper);
         })
         // Add to DOM
-        topLine.append(name, description, dueDate, deleteGoalButton);
+        topLine.append(name, description, dueDate, deleteButton);
         bottomLine.append(notes, viewTasksButton, creationDate, goalEditButton)
         goalCard.append(topLine, bottomLine);
         cardWrapper.append(goalCard);
         content.append(cardWrapper);
+        i++
     }
     const addGoal = document.createElement('div');
     addGoal.classList.add('goal-card');
@@ -164,8 +166,18 @@ function buildTasksView(goal, cardWrapper) {
         taskEditButton.addEventListener('click', () => {
             editTask(task, goal, cardWrapper);
         })
+
+        // Delete Button
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('delete-button');
+        deleteButton.textContent = "x";
+        deleteButton.addEventListener('click', () => {
+            goal.remove(task.id);
+            closeTasksView(goal);
+            buildTasksView(goal, cardWrapper);
+        })
         // Update DOM
-        topLine.append(name, description);
+        topLine.append(name, description, deleteButton);
         bottomLine.append(notes, taskIsComplete, completeToggle, taskEditButton)
         objectCard.append(topLine, bottomLine)
         tasksList.append(objectCard);
@@ -304,7 +316,7 @@ function createTask(goal, cardWrapper) {
         e.preventDefault()
         if (taskName.value) { 
                 const newTask = new Task(taskName.value, currentPriority, description.value, notes.value);
-                goal.addTask(newTask);
+                goal.add(newTask);
                 closeTasksView(goal);
                 buildTasksView(goal, cardWrapper);
                 modal.replaceChildren();
@@ -403,14 +415,18 @@ function editGoal(goal, goalManager) {
         currentPriority = priority.value;
         console.log(currentPriority);
     })
+    const dueDate = document.createElement('input');
+    dueDate.setAttribute('type', 'date')
+    dueDate.setAttribute('value', goal.dueDate)
     const [ submitModal, closeModal ] = createModalButtons(modal);
     submitModal.addEventListener('click', (e) => {
         e.preventDefault()
         if (name.value) {
-            goal.name = name.value;
-            goal.description = description.value;
-            goal.priority = currentPriority;
-            goal.notes = notes.value;
+            goal.editGoal(name.value, dueDate.value, description.value, currentPriority, notes.value)
+            // goal.name = name.value;
+            // goal.description = description.value;
+            // goal.priority = currentPriority;
+            // goal.notes = notes.value;
             clearContent()
             buildGoalsView(goalManager)
             modal.replaceChildren();
@@ -418,7 +434,7 @@ function editGoal(goal, goalManager) {
         }
     })
     priority.append(optionLow, optionMedium, optionHigh);
-    editEntryForm.append(modalTitle, name, description, priorityWrapper, closeModal, notes,  submitModal);
+    editEntryForm.append(modalTitle, name, description, dueDate, priorityWrapper, closeModal, notes,  submitModal);
     modal.append(editEntryForm);
 }
 // 
@@ -440,10 +456,7 @@ function editTask(task, goal, cardWrapper) {
     submitModal.addEventListener('click', (e) => {
         e.preventDefault()
         if (name.value) {
-            task.name = name.value;
-            task.description = description.value;
-            task.priority = currentPriority;
-            task.notes = notes.value;
+            task.editTask(name.value, description.value, currentPriority, notes.value)
             closeTasksView(goal);
             buildTasksView(goal, cardWrapper);
             modal.replaceChildren();

@@ -13,15 +13,23 @@ class Goal {
         this.creationDate = creationDate.toLocaleString()
     }
 
-    addTask(task) {
+    add(task) {
         this.tasks.push(task);
     }
 
-    removeTask(taskID) {
-        this.tasks.splice(this.findTaskByID(taskID), 1);
+    remove(taskID) {
+        this.tasks.splice(this.findByID(taskID), 1);
     }
 
-    findTaskByID(taskID) {
+    findByID(taskID) {
         return this.tasks.findIndex((task) => task.id === taskID);
+    }
+
+    editGoal(newName, newDueDate, newDescription, newPriority, newNotes) {
+        this.name = newName;
+        this.dueDate = newDueDate;
+        this.description = newDescription;
+        this.priority = newPriority;
+        this.notes = newNotes;
     }
 }

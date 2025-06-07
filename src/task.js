@@ -7,4 +7,11 @@ export class Task {
         this.notes = notes;
         this.isComplete = isComplete
     }
+
+    editTask(newName, newDescription, newPriority, newNotes) {
+        this.name = newName;
+        this.description = newDescription;
+        this.priority = newPriority;
+        this.notes = newNotes;
+    }
 }
