@@ -235,6 +235,7 @@ p {
   box-shadow: -12px 0px 20px -14px var(--complete), inset 12px 0px 10px -8px var(--complete) ;
 }
 .complete-toggle {
+  margin-left: 1rem;
   flex-shrink: none;
   width: 1rem;
   height: 1rem;
@@ -275,4 +276,18 @@ p {
   display: flex;
   justify-content: space-around;
   align-items: center;
+}
+
+.edit-button {
+  width: 12rem;
+  justify-self: start;
+}
+.edit-task-button {
+  display: inline-block;
+  background-color: var(--border);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background-color: var(--text-placeholder);
+  border-radius: .5rem;
 }

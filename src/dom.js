@@ -1,6 +1,7 @@
-import { Goal, Task } from './goal.js'
+import { Goal, Task } from './goal.js';
+import { defaultData } from './storage.js';
 
-export function makeHeader() {
+export function makeHeader(goalManager) {
     const header = document.querySelector('header');
     const logo = document.createElement('h1');
     const smile = document.createElement('p');
@@ -10,6 +11,17 @@ export function makeHeader() {
     smile.classList.add('smile');
     smile.textContent = ")";
     logo.textContent = "u du";
+    // const resetButton = document.createElement('button');
+    // resetButton.textContent = "Reset to init"
+    // resetButton.addEventListener('click', () => {
+    //     localStorage.clear();
+    //     localStorage.setItem('goals', JSON.stringify(defaultData));
+    //     goalManager.storage = JSON.parse(localStorage.getItem('goals'))
+    //     goalManager.parseStoredGoals();
+    //     goalManager.saveAndUpdate();
+    //     clearContent()
+    //     buildGoalsView(goalManager);
+    // })
     logo.append(smile);
     header.append(logo, tagLine);
 }
@@ -17,7 +29,6 @@ export function makeHeader() {
 export function buildGoalsView(goalManager) {
     const content = document.querySelector('#content')
     const currentGoals = goalManager.goals;
-    console.table(currentGoals)
     let i = 0;
     for (let goal of currentGoals) {
         // Build Card
@@ -37,7 +48,7 @@ export function buildGoalsView(goalManager) {
         viewTasksButton.addEventListener('click', () => {
             if (viewTasksButton.classList.contains('closed')){
                 viewTasksButton.classList.remove('closed');
-                buildTasksView(goal, cardWrapper);
+                buildTasksView(goal, cardWrapper, goalManager);
                 viewTasksButton.classList.add('open');
                 viewTasksButton.textContent = 'Close Tasks';
             } else {
@@ -53,7 +64,8 @@ export function buildGoalsView(goalManager) {
         deleteButton.textContent = "x";
         deleteButton.addEventListener('click', () => {
             goalManager.remove(goal.id);
-            clearContent()
+            goalManager.saveAndUpdate();
+            clearContent();
             buildGoalsView(goalManager);
         })
         // Priority level lighting
@@ -69,7 +81,8 @@ export function buildGoalsView(goalManager) {
         creationDate.textContent = "Created: " + goal.creationDate;
 
         const goalEditButton = document.createElement('button');
-        goalEditButton.textContent = "Edit Task"
+        goalEditButton.classList.add('edit-button');
+        goalEditButton.textContent = "Edit Goal"
         goalEditButton.addEventListener('click', () => {
             editGoal(goal, goalManager, cardWrapper);
         })
@@ -125,7 +138,7 @@ function createTopBottomLine() {
     return [ topLine, bottomLine ];
 }
 
-function buildTasksView(goal, cardWrapper) {
+function buildTasksView(goal, cardWrapper, goalManager) {
     const currentTasks = goal.tasks;
     // Task Card
     const tasksList = document.createElement('div');
@@ -139,11 +152,12 @@ function buildTasksView(goal, cardWrapper) {
         // Build the two lines
         const [ topLine, bottomLine ] = createTopBottomLine();
         // Parameters unique to object
+        const completeWrapper = document.createElement('div')
         const taskIsComplete = document.createElement('div')
         taskIsComplete.classList.add('complete-description')
         taskIsComplete.textContent = `Completion status: ${task.isComplete}`;
         // Toggle complete button
-        const completeToggle = document.createElement('span')
+        const completeToggle = document.createElement('button')
         completeToggle.classList.add('complete-toggle')
         completeToggle.classList.add(`complete-${task.isComplete}`)
         completeToggle.addEventListener('click', () => {
@@ -160,11 +174,14 @@ function buildTasksView(goal, cardWrapper) {
             buildTasksView(goal, cardWrapper);
         }
         )
+        taskIsComplete.append(completeToggle)
         // Edit Button
         const taskEditButton = document.createElement('button');
-        taskEditButton.textContent = "Edit Task"
+        taskEditButton.textContent = "Edit Task";
+        taskEditButton.classList.add('edit-button')
+        taskEditButton.classList.add('edit-task-button')
         taskEditButton.addEventListener('click', () => {
-            editTask(task, goal, cardWrapper);
+            editTask(task, goal, cardWrapper, goalManager);
         })
 
         // Delete Button
@@ -173,12 +190,13 @@ function buildTasksView(goal, cardWrapper) {
         deleteButton.textContent = "x";
         deleteButton.addEventListener('click', () => {
             goal.remove(task.id);
+            goalManager.saveAndUpdate();
             closeTasksView(goal);
             buildTasksView(goal, cardWrapper);
         })
         // Update DOM
         topLine.append(name, description, deleteButton);
-        bottomLine.append(notes, taskIsComplete, completeToggle, taskEditButton)
+        bottomLine.append(taskEditButton, notes, taskIsComplete)
         objectCard.append(topLine, bottomLine)
         tasksList.append(objectCard);
     }
@@ -187,7 +205,7 @@ function buildTasksView(goal, cardWrapper) {
     addTask.classList.add('add-goal');
     addTask.textContent = "+ + A d d   T a s k + +";
     addTask.addEventListener('click', () => {
-        createTask(goal, cardWrapper)
+        createTask(goal, cardWrapper, goalManager)
     })
     tasksList.append(addTask)
     cardWrapper.append(tasksList);
@@ -261,6 +279,7 @@ function createGoal(goalManager) {
         if (goalName.value && dueDate.value) { 
                 const newGoal = new Goal(goalName.value,  dueDate.value, description.value, currentPriority, notes.value)
                 goalManager.addGoal(newGoal)
+                goalManager.saveAndUpdate()
                 clearContent()
                 buildGoalsView(goalManager);
                 modal.replaceChildren()
@@ -273,7 +292,7 @@ function createGoal(goalManager) {
     modal.append(goalForm, )
 }
 
-function createTask(goal, cardWrapper) {
+function createTask(goal, cardWrapper, goalManager) {
     const modalTitle = createModalTitle("Create Task")
     const [ openModal, closedModal, modal ] = displayModal();
     modal.showModal();
@@ -317,6 +336,7 @@ function createTask(goal, cardWrapper) {
         if (taskName.value) { 
                 const newTask = new Task(taskName.value, currentPriority, description.value, notes.value);
                 goal.add(newTask);
+                goalManager.saveAndUpdate()
                 closeTasksView(goal);
                 buildTasksView(goal, cardWrapper);
                 modal.replaceChildren();
@@ -325,7 +345,7 @@ function createTask(goal, cardWrapper) {
     })
     const placeHoldingElement = document.createElement('div')
     priority.append(optionLow, optionMedium, optionHigh);
-    taskForm.append(modalTitle, taskName, description, priorityWrapper, closeModal, notes, placeHoldingElement, submitModal);
+    taskForm.append(modalTitle, taskName, description, priorityWrapper, closeModal, placeHoldingElement, notes,  submitModal);
     modal.append(taskForm, );
 }
 
@@ -423,10 +443,7 @@ function editGoal(goal, goalManager) {
         e.preventDefault()
         if (name.value) {
             goal.editGoal(name.value, dueDate.value, description.value, currentPriority, notes.value)
-            // goal.name = name.value;
-            // goal.description = description.value;
-            // goal.priority = currentPriority;
-            // goal.notes = notes.value;
+            goalManager.saveAndUpdate()
             clearContent()
             buildGoalsView(goalManager)
             modal.replaceChildren();
@@ -440,7 +457,7 @@ function editGoal(goal, goalManager) {
 // 
 // 
 // 
-function editTask(task, goal, cardWrapper) {
+function editTask(task, goal, cardWrapper, goalManager) {
     const modalTitle = createModalTitle("Edit Task");
     const [ openModal, closedModal, modal ] = displayModal();
     modal.showModal();
@@ -458,12 +475,13 @@ function editTask(task, goal, cardWrapper) {
         if (name.value) {
             task.editTask(name.value, description.value, currentPriority, notes.value)
             closeTasksView(goal);
+            goalManager.saveAndUpdate();
             buildTasksView(goal, cardWrapper);
             modal.replaceChildren();
             modal.close();
         }})
     const placeHolderElement = document.createElement('div')
     priority.append(optionLow, optionMedium, optionHigh);
-    editEntryForm.append(modalTitle, name, description, priorityWrapper, closeModal, notes, placeHolderElement,  submitModal);
+    editEntryForm.append(modalTitle, name, description, priorityWrapper, closeModal, placeHolderElement, notes,  submitModal);
     modal.append(editEntryForm);
 }
