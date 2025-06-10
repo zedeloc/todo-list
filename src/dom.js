@@ -170,8 +170,9 @@ function buildTasksView(goal, cardWrapper, goalManager) {
                 task.isComplete = false;
                 completeToggle.classList.add(`complete-${task.isComplete}`)
             }
+            goalManager.saveAndUpdate()
             closeTasksView(goal);
-            buildTasksView(goal, cardWrapper);
+            buildTasksView(goal, cardWrapper, goalManager);
         }
         )
         taskIsComplete.append(completeToggle)
@@ -192,7 +193,7 @@ function buildTasksView(goal, cardWrapper, goalManager) {
             goal.remove(task.id);
             goalManager.saveAndUpdate();
             closeTasksView(goal);
-            buildTasksView(goal, cardWrapper);
+            buildTasksView(goal, cardWrapper, goalManager);
         })
         // Update DOM
         topLine.append(name, description, deleteButton);
@@ -338,7 +339,7 @@ function createTask(goal, cardWrapper, goalManager) {
                 goal.add(newTask);
                 goalManager.saveAndUpdate()
                 closeTasksView(goal);
-                buildTasksView(goal, cardWrapper);
+                buildTasksView(goal, cardWrapper, goalManager);
                 modal.replaceChildren();
                 modal.close();
             }
@@ -476,7 +477,7 @@ function editTask(task, goal, cardWrapper, goalManager) {
             task.editTask(name.value, description.value, currentPriority, notes.value)
             closeTasksView(goal);
             goalManager.saveAndUpdate();
-            buildTasksView(goal, cardWrapper);
+            buildTasksView(goal, cardWrapper, goalManager);
             modal.replaceChildren();
             modal.close();
         }})

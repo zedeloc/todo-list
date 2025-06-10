@@ -4,7 +4,7 @@ import { makeHeader, buildGoalsView } from "./dom.js";
 import { GoalManager } from "./goal-manager.js";
 import { defaultData } from "./storage.js";
 
-
+// localStorage.clear() // to reset initial values
 
 makeHeader()
 if(!localStorage.getItem('goals')) {
