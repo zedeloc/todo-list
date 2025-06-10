@@ -417,13 +417,11 @@ function buildEditForm(obj, objectName) {
     // 
     const notes = document.createElement('textarea');
     notes.setAttribute('placeholder', `${objectName} Notes`);
-    notes.setAttribute('value', obj.notes);
+    notes.textContent = obj.notes;
 
     return [ editEntryForm, name, description, priority, priorityWrapper, optionLow, optionMedium, optionHigh, notes ]
 }
-// 
-// 
-// FOCUS ON THIS!!!
+
 function editGoal(goal, goalManager) {
     const modalTitle = createModalTitle("Edit Goal");
     const [ openModal, closedModal, modal ] = displayModal();
